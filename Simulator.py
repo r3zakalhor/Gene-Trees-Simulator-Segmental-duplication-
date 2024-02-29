@@ -111,13 +111,29 @@ def rename_internal_nodes(tree):
 
 def remove_single_child_internal_nodes(tree):
     for node in tree.traverse("postorder"):
+        if node.is_leaf():
+            node_name_parts = node.name.split('_')
+            if node_name_parts[2]!="0":
+                parent = node.up
+                node.detach()
+                while parent:
+                    node = parent
+                    parent = node.up
+                    node.detach()
+    for node in tree.traverse("postorder"):
         if not node.is_leaf() and len(node.children) == 1:
             child = node.children[0]
             parent = node.up
             # Remove the internal node
             node.detach()
             # Link the parent to the child
-            parent.add_child(child)
+            if parent:
+                parent.add_child(child)
+            else:
+                for node1 in tree.traverse("postorder"):
+                    node1.detach()
+                tree.name = ""
+                #print(tree.write())
 
 
 def generate_gene_trees(species_tree, num_gene_trees):

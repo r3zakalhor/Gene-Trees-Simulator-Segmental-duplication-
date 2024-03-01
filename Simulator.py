@@ -115,11 +115,14 @@ def remove_single_child_internal_nodes(tree):
             node_name_parts = node.name.split('_')
             if node_name_parts[2]!="0":
                 parent = node.up
-                node.detach()
-                while parent:
-                    node = parent
-                    parent = node.up
+                if len(parent.children) == 2:
                     node.detach()
+                else:
+                    node.detach()
+                    while len(parent.children) == 1:
+                        node = parent
+                        parent = node.up
+                        node.detach()
     for node in tree.traverse("postorder"):
         if not node.is_leaf() and len(node.children) == 1:
             child = node.children[0]
